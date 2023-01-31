@@ -2,6 +2,10 @@ var express = require('express');
 const mongoose = require("mongoose");
 const Project = require("./src/models/project.ts");
 var app = express();
+const cors = require('cors');
+app.use(cors({
+    origin: 'https://jm-portfolio-qnov.onrender.com'
+}));
 const start = async () => {
   try {
     await mongoose.connect(
