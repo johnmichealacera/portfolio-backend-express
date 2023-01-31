@@ -3,13 +3,14 @@ const mongoose = require("mongoose");
 const Project = require("./src/models/project.ts");
 var app = express();
 const cors = require('cors');
+require('dotenv').config();
 app.use(cors({
-    origin: 'https://jm-portfolio-qnov.onrender.com'
+    origin: process.env.PORTFOLIO_FRONTEND_URL,
 }));
 const start = async () => {
   try {
     await mongoose.connect(
-      "mongodb+srv://jmann432015:L3E1IgbaXuyOUjI8@cluster0.o7ogr.mongodb.net/personal?authSource=admin&replicaSet=atlas-10vtn2-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true"
+      process.env.MONGO_DB_STRING_CONNECTION
     );
     app.listen(5000, () => console.log("Server started on port 3000"));
   } catch (error) {
