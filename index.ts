@@ -1,6 +1,9 @@
 var express = require('express');
 const mongoose = require("mongoose");
 const Project = require("./src/models/project.ts");
+const Introduction = require("./src/models/introduction.ts");
+const Skill = require("./src/models/skill.ts");
+const SocialMedia = require("./src/models/social-media.ts");
 var app = express();
 const cors = require('cors');
 require('dotenv').config();
@@ -25,4 +28,19 @@ start();
 app.get("/projects", async (req, res) => {
   const allProjects = await Project.find({}, { __v: 0, _id: 0 }).lean();
   return res.status(200).json(allProjects);
+});
+
+app.get("/introduction", async (req, res) => {
+  const allIntroductionData = await Introduction.find({}, { __v: 0, _id: 0 }).lean();
+  return res.status(200).json(allIntroductionData);
+});
+
+app.get("/skills", async (req, res) => {
+  const allSkills = await Skill.find({}, { __v: 0, _id: 0 }).lean();
+  return res.status(200).json(allSkills);
+});
+
+app.get("/social-media", async (req, res) => {
+  const allSocialMedia = await SocialMedia.find({}, { __v: 0, _id: 0 }).lean();
+  return res.status(200).json(allSocialMedia);
 });
