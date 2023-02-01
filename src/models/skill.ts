@@ -1,6 +1,6 @@
-const { Schema, model } = require("mongoose");
+const skillMongooseInstance = require("mongoose");
 
-const SkillSchema = new Schema({
+const SkillSchema = new skillMongooseInstance.Schema({
   type: {
     type: String,
   },
@@ -12,4 +12,4 @@ const SkillSchema = new Schema({
   },
 });
 
-module.exports = model("Skill", SkillSchema, "skills");
+module.exports = skillMongooseInstance.model("Skill", SkillSchema);

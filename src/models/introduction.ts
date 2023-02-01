@@ -1,6 +1,6 @@
-const { Schema, model } = require("mongoose");
+const introductionMongooseInstance = require("mongoose");
 
-const IntroductionSchema = new Schema({
+const IntroductionSchema = new introductionMongooseInstance.Schema({
   title: {
     type: String,
   },
@@ -9,4 +9,4 @@ const IntroductionSchema = new Schema({
   },
 });
 
-module.exports = model("Introduction", IntroductionSchema, "introduction");
+module.exports = introductionMongooseInstance.model("Introduction", IntroductionSchema);

@@ -1,6 +1,6 @@
-const { Schema, model } = require("mongoose");
+const socialMediaMongooseInstance = require("mongoose");
 
-const SocialMediaSchema = new Schema({
+const SocialMediaSchema = new socialMediaMongooseInstance.Schema({
   type: {
     type: String,
   },
@@ -9,4 +9,4 @@ const SocialMediaSchema = new Schema({
   },
 });
 
-module.exports = model("SocialMedia", SocialMediaSchema, "socialmedia");
+module.exports = socialMediaMongooseInstance.model("SocialMedia", SocialMediaSchema, "socialmedia");

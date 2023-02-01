@@ -1,6 +1,6 @@
-const { Schema, model } = require("mongoose");
+const mongooseInstance = require("mongoose");
 
-const ProjectSchema = new Schema({
+const ProjectSchema = new mongooseInstance.Schema({
   title: {
     type: String,
   },
@@ -15,4 +15,4 @@ const ProjectSchema = new Schema({
   },
 });
 
-module.exports = model("Project", ProjectSchema, "project");
+module.exports = mongooseInstance.model("Project", ProjectSchema);
