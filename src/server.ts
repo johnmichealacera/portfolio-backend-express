@@ -1,9 +1,11 @@
 const express = require('express');
 const mongoose = require("mongoose");
-const PortfolioController = require("./src/controller/portfolio.controller.ts")
+const PortfolioController = require("./controller/portfolio.controller.ts");
 const app = express();
 const cors = require('cors');
 require('dotenv').config();
+
+
 app.use(cors({
     origin: process.env.PORTFOLIO_FRONTEND_URL,
 }));

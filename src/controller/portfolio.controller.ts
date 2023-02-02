@@ -4,25 +4,69 @@ const Skill = require("../../src/models/skill.ts");
 const SocialMedia = require("../../src/models/social-media.ts");
 const User = require("../../src/models/user.ts");
 const bcrypt = require('bcrypt');
+const { Redis } = require("../../src/cache/cache.redis.ts");
+
+const fetchRedisData = async (key) => {
+  const redis = new Redis();
+  const client = await redis.getClient();
+  client.on('error', (err) => console.log('Redis Client Error', err));
+  await client.connect();
+  const value = await client.get(key);
+  await client.disconnect();
+
+  if (value) {
+    return JSON.parse(value);
+  } else {
+    return false;
+  }
+
+}
+
+const saveRedisData = async (key, data) => {
+  const redis = new Redis();
+  const client = await redis.getClient();
+  client.on('error', (err) => console.log('Redis Client Error', err));
+  await client.connect();
+  await client.set(key, JSON.stringify(data), {
+    EX: 86400,
+});
+  await client.disconnect();
+}
 
 const getProjects = async (req, res, next) => {
-  const allProjects = await Project.find({}, { __v: 0, _id: 0 }).lean();
-  return res.status(200).json(allProjects);
+  let redisProjects = await fetchRedisData('projects');
+  if (!redisProjects) {
+    redisProjects = await Project.find({}, { __v: 0, _id: 0 }).lean();
+    await saveRedisData('projects', redisProjects);
+  }
+  return res.status(200).json(redisProjects);
 }
 
 const getIntroductionData = async (req, res, next) => {
-  const allIntroductionData = await Introduction.find({}, { __v: 0, _id: 0 }).lean();
-  return res.status(200).json(allIntroductionData);
+  let redisItroductions = await fetchRedisData('introductions');
+  if (!redisItroductions) {
+    redisItroductions = await Introduction.find({}, { __v: 0, _id: 0 }).lean();
+    await saveRedisData('introductions', redisItroductions);
+  }
+  return res.status(200).json(redisItroductions);
 }
 
 const getSkills = async (req, res, next) => {
-  const allSkills = await Skill.find({}, { __v: 0, _id: 0 }).lean();
-  return res.status(200).json(allSkills);
+  let redisSkills = await fetchRedisData('skills');
+  if (!redisSkills) {
+    redisSkills = await Skill.find({}, { __v: 0, _id: 0 }).lean();
+    await saveRedisData('skills', redisSkills);
+  }
+  return res.status(200).json(redisSkills);
 }
 
 const getSocialMedia = async (req, res, next) => {
-  const allSocialMedia = await SocialMedia.find({}, { __v: 0, _id: 0 }).lean();
-  return res.status(200).json(allSocialMedia);
+  let redisSocialMeda = await fetchRedisData('social-media');
+  if (!redisSocialMeda) {
+    redisSocialMeda = await SocialMedia.find({}, { __v: 0, _id: 0 }).lean();
+    await saveRedisData('social-media', redisSocialMeda);
+  }
+  return res.status(200).json(redisSocialMeda);
 }
 
 const postUser = async (req, res, next) => {
@@ -41,10 +85,13 @@ const postUser = async (req, res, next) => {
 }
 
 const verifyUser = async (req, res, next) => {
-  const user = await User.find({username: req.body.username}, { __v: 0, _id: 0 }).lean();
-  const password = req.body.password;
+  const user = await User.find({username: req.query.username}, { __v: 0, _id: 0 }).lean();
+  if (user.length < 1) {
+    return res.status(401).json(false);
+  }
+  const password = req.query.password;
   const isVerified = await bcrypt.compareSync(password, user?.[0]?.password); // true
-  return isVerified ? res.status(200).json(true) : res.status(401).json(false);
+  return res.status(200).json(true);
 }
 
 module.exports = { getProjects, getIntroductionData, getSkills, getSocialMedia, postUser, verifyUser };
