@@ -130,4 +130,4 @@ const getSocialMedia = async (req, res, next) => {
 //   return res.status(200).json(true);
 // }
 
-module.exports = { getProjects, getIntroductionData, getSkills, getSocialMedia, postUser, verifyUser };
+module.exports = { getProjects, getIntroductionData, getSkills, getSocialMedia };
