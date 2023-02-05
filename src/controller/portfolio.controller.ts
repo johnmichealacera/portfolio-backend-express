@@ -1,8 +1,3 @@
-const Project = require("../../src/models/project.ts");
-const Introduction = require("../../src/models/introduction.ts");
-const Skill = require("../../src/models/skill.ts");
-const SocialMedia = require("../../src/models/social-media.ts");
-const User = require("../../src/models/user.ts");
 const bcrypt = require('bcrypt');
 const { Redis } = require("../../src/cache/cache.redis.ts");
 const db = require('../database/db.ts');
@@ -110,29 +105,29 @@ const getSocialMedia = async (req, res, next) => {
   });
 }
 
-const postUser = async (req, res, next) => {
-  const user = await User.find({username: req.body.username}, { __v: 0, _id: 0 }).lean();
-  if (user?.length > 0) {
-    return res.status(500).json('Username already taken');
-  }
-  const saltRounds = 10;
-  const hash = bcrypt.hashSync(req.body.password, saltRounds);
-  const newUser = await new User({ username: req.body.username, password: hash });
-	const createdUser = await newUser.save(function (err, user) {
-	  if (err) return console.error(err);
-	  return user;
-	});
-  return res.status(200).json(createdUser);
-}
+// const postUser = async (req, res, next) => {
+//   const user = await User.find({username: req.body.username}, { __v: 0, _id: 0 }).lean();
+//   if (user?.length > 0) {
+//     return res.status(500).json('Username already taken');
+//   }
+//   const saltRounds = 10;
+//   const hash = bcrypt.hashSync(req.body.password, saltRounds);
+//   const newUser = await new User({ username: req.body.username, password: hash });
+// 	const createdUser = await newUser.save(function (err, user) {
+// 	  if (err) return console.error(err);
+// 	  return user;
+// 	});
+//   return res.status(200).json(createdUser);
+// }
 
-const verifyUser = async (req, res, next) => {
-  const user = await User.find({username: req.query.username}, { __v: 0, _id: 0 }).lean();
-  if (user.length < 1) {
-    return res.status(401).json(false);
-  }
-  const password = req.query.password;
-  const isVerified = await bcrypt.compareSync(password, user?.[0]?.password); // true
-  return res.status(200).json(true);
-}
+// const verifyUser = async (req, res, next) => {
+//   const user = await User.find({username: req.query.username}, { __v: 0, _id: 0 }).lean();
+//   if (user.length < 1) {
+//     return res.status(401).json(false);
+//   }
+//   const password = req.query.password;
+//   const isVerified = await bcrypt.compareSync(password, user?.[0]?.password); // true
+//   return res.status(200).json(true);
+// }
 
 module.exports = { getProjects, getIntroductionData, getSkills, getSocialMedia, postUser, verifyUser };
