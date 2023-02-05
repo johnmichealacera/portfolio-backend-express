@@ -5,6 +5,7 @@ const SocialMedia = require("../../src/models/social-media.ts");
 const User = require("../../src/models/user.ts");
 const bcrypt = require('bcrypt');
 const { Redis } = require("../../src/cache/cache.redis.ts");
+const db = require('../database/db.ts');
 
 const fetchRedisData = async (key) => {
   const redis = new Redis();
@@ -36,7 +37,13 @@ const saveRedisData = async (key, data) => {
 const getProjects = async (req, res, next) => {
   let redisProjects = await fetchRedisData('projects');
   if (!redisProjects) {
-    redisProjects = await Project.find({}, { __v: 0, _id: 0 }).lean();
+    // Query for mongodb
+    // redisProjects = await Project.find({}, { __v: 0, _id: 0 }).lean();
+    // Query for mysql
+    await db.query('SELECT projects.title, projects.description, projects.url, projects.imagelink FROM projects, users where projects.user_id = users.user_id and projects.user_id = 2;', function (error, results, fields) {
+      if (error) throw error;
+      redisProjects = results;
+    });
     await saveRedisData('projects', redisProjects);
   }
   return res.status(200).json(redisProjects);
@@ -45,7 +52,13 @@ const getProjects = async (req, res, next) => {
 const getIntroductionData = async (req, res, next) => {
   let redisItroductions = await fetchRedisData('introductions');
   if (!redisItroductions) {
-    redisItroductions = await Introduction.find({}, { __v: 0, _id: 0 }).lean();
+    // Query for mongodb
+    // redisItroductions = await Introduction.find({}, { __v: 0, _id: 0 }).lean();
+    // Query for mysql
+    await db.query('SELECT introductions.title, introductions.icon FROM introductions, users where introductions.user_id = users.user_id and users.user_id=2;', function (error, results, fields) {
+      if (error) throw error;
+      redisItroductions = results;
+    });
     await saveRedisData('introductions', redisItroductions);
   }
   return res.status(200).json(redisItroductions);
@@ -54,7 +67,13 @@ const getIntroductionData = async (req, res, next) => {
 const getSkills = async (req, res, next) => {
   let redisSkills = await fetchRedisData('skills');
   if (!redisSkills) {
-    redisSkills = await Skill.find({}, { __v: 0, _id: 0 }).lean();
+    // Query for mongodb
+    // redisSkills = await Skill.find({}, { __v: 0, _id: 0 }).lean();
+    // Query for mysql
+    await db.query('SELECT skills.type, skills.name, mastery FROM skills, users where skills.user_id = users.user_id and skills.user_id = 2;', function (error, results, fields) {
+      if (error) throw error;
+      redisSkills = results;
+    });
     await saveRedisData('skills', redisSkills);
   }
   return res.status(200).json(redisSkills);
@@ -63,7 +82,13 @@ const getSkills = async (req, res, next) => {
 const getSocialMedia = async (req, res, next) => {
   let redisSocialMeda = await fetchRedisData('social-media');
   if (!redisSocialMeda) {
-    redisSocialMeda = await SocialMedia.find({}, { __v: 0, _id: 0 }).lean();
+    // Query for mongodb
+    // redisSocialMeda = await SocialMedia.find({}, { __v: 0, _id: 0 }).lean();
+    // Query for mysql
+    await db.query('SELECT socialmedia.type, socialmedia.url FROM sql12595958.socialmedia, sql12595958.users where socialmedia.user_id = users.user_id and socialmedia.user_id = 2;', function (error, results, fields) {
+      if (error) throw error;
+      redisSocialMeda = results;
+    });
     await saveRedisData('social-media', redisSocialMeda);
   }
   return res.status(200).json(redisSocialMeda);
