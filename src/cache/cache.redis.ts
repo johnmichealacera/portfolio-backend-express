@@ -6,8 +6,6 @@ export class Redis {
   constructor() {
     this.client = redis.createClient({
       url: process.env.REDIS_STRING_URL,
-      // Todo: find a way to make this work
-      // expire: 60
     });
   }
  
