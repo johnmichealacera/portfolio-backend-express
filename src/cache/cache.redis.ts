@@ -1,12 +1,13 @@
-const redis = require('redis');
+import * as redis from 'redis';
 
-class Redis {
+export class Redis {
   client;
  
   constructor() {
     this.client = redis.createClient({
       url: process.env.REDIS_STRING_URL,
-      expire: 60
+      // Todo: find a way to make this work
+      // expire: 60
     });
   }
  
@@ -14,5 +15,3 @@ class Redis {
     return this.client;
   }
 }
-
-module.exports = { Redis };

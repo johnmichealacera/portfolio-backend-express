@@ -1,10 +1,10 @@
-const express = require('express');
-const PortfolioController = require("./controller/portfolio.controller.ts");
+import express from 'express';
+import { getIntroductionData, getProjects, getSkills, getSocialMedia } from "./controller/portfolio.controller";
+import * as dotenv from "dotenv";
+
 const app = express();
 const cors = require('cors');
-require('dotenv').config();
-
-
+dotenv.config();
 app.use(cors({
     origin: process.env.PORTFOLIO_FRONTEND_URL,
 }));
@@ -19,9 +19,7 @@ app.use(express.json());
 
 start();
 
-app.get("/projects", PortfolioController.getProjects);
-app.get("/introduction", PortfolioController.getIntroductionData);
-app.get("/skills", PortfolioController.getSkills);
-app.get("/social-media", PortfolioController.getSocialMedia);
-// app.post("/user", PortfolioController.postUser);
-// app.get("/user", PortfolioController.verifyUser);
+app.get("/projects", getProjects);
+app.get("/introduction", getIntroductionData);
+app.get("/skills", getSkills);
+app.get("/social-media", getSocialMedia);

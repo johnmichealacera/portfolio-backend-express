@@ -1,10 +1,8 @@
 const mysql = require('mysql');
 
-const connection = async (host, user, password, database) => mysql.createConnection({
+export const dbConnection = async (host: string, user: string, password: string, database: string) => mysql.createConnection({
   host,
   user,
   password,
   database,
 });
-
-module.exports = connection;
