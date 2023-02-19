@@ -1,5 +1,5 @@
 import express from 'express';
-import { getIntroductionData, getProjects, getSkills, getSocialMedia } from "./controller/portfolio.controller";
+import { getIntroductions, getProjects, getSkills, getSocialMedia, getSoftSkills, getUserDetails, getUserInfo } from "./controller/portfolio.controller";
 import * as dotenv from "dotenv";
 
 const app = express();
@@ -19,7 +19,10 @@ app.use(express.json());
 
 start();
 
-app.get("/projects", getProjects);
-app.get("/introduction", getIntroductionData);
-app.get("/skills", getSkills);
-app.get("/social-media", getSocialMedia);
+app.get("/projects/:userId", getProjects);
+app.get("/introductions/:userId", getIntroductions);
+app.get("/skills/:userId", getSkills);
+app.get("/social-media/:userId", getSocialMedia);
+app.get("/user-info/:userId", getUserInfo);
+app.get("/user-details/:userId", getUserDetails);
+app.get("/soft-skills/:userId", getSoftSkills);

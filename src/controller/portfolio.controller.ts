@@ -30,7 +30,8 @@ export const saveRedisData = async (key: string, data: Record<string, any>) => {
 }
 
 export const getProjects = async (req: Request, res: Response, next: NextFunction) => {
-  let redisProjects = await fetchRedisData('projects');
+  const { userId } = req?.params;
+  let redisProjects = await fetchRedisData(`projects-${userId}`);
   if (redisProjects) {
     return res.status(200).json(redisProjects);
   }
@@ -38,57 +39,146 @@ export const getProjects = async (req: Request, res: Response, next: NextFunctio
   connection.connect(function(err: Error) {
     if (err) throw err;
   });
-  await connection.query('SELECT projects.title, projects.description, projects.url, projects.imageLink FROM projects, users where projects.user_id = users.user_id and projects.user_id = 2;', async function (error: Error, results: any) {
-    if (error) throw error;
-    saveRedisData('projects', results);
+  const sqlParams = [userId];
+  const sql = 'SELECT title, description, url, imageLink FROM projects, users where projects.user_id = users.user_id and projects.user_id = ?;';
+  await connection.query(sql, sqlParams, function (err: Error, results: any) {
+    if (err) throw err;
+    saveRedisData(`projects-${userId}`, results);
     return res.status(200).json(results);
   });
+  connection.end()
 }
 
-export const getIntroductionData = async (req: Request, res: Response, next: NextFunction) => {
-  let redisItroductions = await fetchRedisData('introductions');
-  if (redisItroductions) {
-    return res.status(200).json(redisItroductions);
+export const getIntroductions = async (req: Request, res: Response, next: NextFunction) => {
+  const { userId } = req?.params;
+  let redisData = await fetchRedisData(`introductions-${userId}`);
+  if (redisData) {
+    return res.status(200).json(redisData);
   }
   const connection = await dbConnection(process.env.MYSQL_HOST ?? '', process.env.MYSQL_USERNAME ?? '', process.env.MYSQL_PASSWORD ?? '', process.env.MYSQL_DATABASE ?? '');
   connection.connect(function(err: Error) {
     if (err) throw err;
   });
-  await connection.query('SELECT introductions.title, introductions.icon FROM introductions, users where introductions.user_id = users.user_id and users.user_id=2;', async function (error: Error, results: any) {
-    if (error) throw error;
-    saveRedisData('introductions', results);
-    return res.status(200).json(results);
+  const sqlParams = [userId];
+  const sqlExpertise = 'SELECT title, icon FROM introductions, users where introductions.user_id = users.user_id and users.user_id=?;';
+  const introductionObj = {
+    expertise: [],
+    fullName: '',
+    jobDescription: '',
+  };
+  await connection.query(sqlExpertise, sqlParams, function (err: Error, results: any) {
+    if (err) throw err;
+    // saveRedisData(`introductions-${userId}`, results);
+    // return res.status(200).json(results);
+    introductionObj.expertise = results;
   });
+  const sqlUserData = 'SELECT user_full_name as fullName, user_info_job_description as jobDescription FROM users, users_info where users_info.user_id=users.user_id and users.user_id=?;';
+  await connection.query(sqlUserData, sqlParams, function (err: Error, results: any) {
+    if (err) throw err;
+    introductionObj.fullName = results[0]?.fullName;
+    introductionObj.jobDescription = results[0]?.jobDescription;
+    saveRedisData(`introductions-${userId}`, introductionObj);
+    return res.status(200).json(introductionObj);
+  });
+  connection.end()
 }
 
 export const getSkills = async (req: Request, res: Response, next: NextFunction) => {
-  let redisSkills = await fetchRedisData('skills');
-  if (redisSkills) {
-    return res.status(200).json(redisSkills);
+  const { userId } = req?.params;
+  let redisData = await fetchRedisData(`skills-${userId}`);
+  if (redisData) {
+    return res.status(200).json(redisData);
   }
   const connection = await dbConnection(process.env.MYSQL_HOST ?? '', process.env.MYSQL_USERNAME ?? '', process.env.MYSQL_PASSWORD ?? '', process.env.MYSQL_DATABASE ?? '');
   connection.connect(function(err: Error) {
     if (err) throw err;
   });
-  await connection.query('SELECT skills.type, skills.name, mastery FROM skills, users where skills.user_id = users.user_id and skills.user_id = 2;', async function (error: Error, results: any) {
-    if (error) throw error;
-    saveRedisData('skills', results);
+  const sqlParams = [userId];
+  const sql = 'SELECT type, name, mastery FROM skills, users where skills.user_id = users.user_id and skills.user_id = ?;';
+  await connection.query(sql, sqlParams, function (err: Error, results: any) {
+    if (err) throw err;
+    saveRedisData(`skills-${userId}`, results);
     return res.status(200).json(results);
   });
+  connection.end()
 }
 
 export const getSocialMedia = async (req: Request, res: Response, next: NextFunction) => {
-  let redisSocialMeda = await fetchRedisData('social-media');
-  if (redisSocialMeda) {
-    return res.status(200).json(redisSocialMeda);
+  const { userId } = req?.params;
+  let redisData = await fetchRedisData(`social-media-${userId}`);
+  if (redisData) {
+    return res.status(200).json(redisData);
   }
   const connection = await dbConnection(process.env.MYSQL_HOST ?? '', process.env.MYSQL_USERNAME ?? '', process.env.MYSQL_PASSWORD ?? '', process.env.MYSQL_DATABASE ?? '');
   connection.connect(function(err: Error) {
     if (err) throw err;
   });
-  await connection.query('SELECT socialmedia.type, socialmedia.url FROM sql12595958.socialmedia, sql12595958.users where socialmedia.user_id = users.user_id and socialmedia.user_id = 2;', async function (error: Error, results: any) {
-    if (error) throw error;
-    saveRedisData('social-media', results);
+  const sqlParams = [userId];
+  const sql = 'SELECT type, url FROM socialmedia, users where socialmedia.user_id = users.user_id and socialmedia.user_id = ?;';
+  await connection.query(sql, sqlParams, function (err: Error, results: any) {
+    if (err) throw err;
+    saveRedisData(`social-media-${userId}`, results);
     return res.status(200).json(results);
   });
+  connection.end()
+}
+
+export const getUserInfo = async (req: Request, res: Response, next: NextFunction) => {
+  const { userId } = req?.params;
+  let redisData = await fetchRedisData(`user-info-${userId}`);
+  if (redisData) {
+    return res.status(200).json(redisData);
+  }
+  const connection = await dbConnection(process.env.MYSQL_HOST ?? '', process.env.MYSQL_USERNAME ?? '', process.env.MYSQL_PASSWORD ?? '', process.env.MYSQL_DATABASE ?? '');
+  connection.connect(function(err: Error) {
+    if (err) throw err;
+  });
+  const sqlParams = [userId];
+  const sql = 'SELECT user_info_job_description as jobDescription, user_info_short_life_story as lifeStory, user_info_why_doing_this as userWhy FROM users_info, users where users_info.user_id = users.user_id and users_info.user_id = ?;';
+  await connection.query(sql, sqlParams, function (err: Error, results: any) {
+    if (err) throw err;
+    saveRedisData(`user-info-${userId}`, results?.[0]);
+    return res.status(200).json(results?.[0]);
+  });
+  connection.end()
+}
+
+export const getUserDetails = async (req: Request, res: Response, next: NextFunction) => {
+  const { userId } = req?.params;
+  let redisData = await fetchRedisData(`user-details-${userId}`);
+  if (redisData) {
+    return res.status(200).json(redisData);
+  }
+  const connection = await dbConnection(process.env.MYSQL_HOST ?? '', process.env.MYSQL_USERNAME ?? '', process.env.MYSQL_PASSWORD ?? '', process.env.MYSQL_DATABASE ?? '');
+  connection.connect(function(err: Error) {
+    if (err) throw err;
+  });
+  const sqlParams = [userId];
+  const sql = 'SELECT user_full_name as fullName, user_email as email, user_contact_number as contactNumber FROM users where users.user_id = ?;';
+  await connection.query(sql, sqlParams, function (err: Error, results: any) {
+    if (err) throw err;
+    saveRedisData(`user-details-${userId}`, results?.[0]);
+    return res.status(200).json(results?.[0]);
+  });
+  connection.end()
+}
+
+export const getSoftSkills = async (req: Request, res: Response, next: NextFunction) => {
+  const { userId } = req?.params;
+  let redisData = await fetchRedisData(`soft-skills-${userId}`);
+  if (redisData) {
+    return res.status(200).json(redisData);
+  }
+  const connection = await dbConnection(process.env.MYSQL_HOST ?? '', process.env.MYSQL_USERNAME ?? '', process.env.MYSQL_PASSWORD ?? '', process.env.MYSQL_DATABASE ?? '');
+  connection.connect(function(err: Error) {
+    if (err) throw err;
+  });
+  const sqlParams = [userId];
+  const sql = 'SELECT name , shortDescription, icon FROM softSkills, users where softSkills.user_id = users.user_id and softSkills.user_id = ?;';
+  await connection.query(sql, sqlParams, function (err: Error, results: any) {
+    if (err) throw err;
+    saveRedisData(`soft-skills-${userId}`, results);
+    return res.status(200).json(results);
+  });
+  connection.end()
 }
