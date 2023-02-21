@@ -134,7 +134,7 @@ export const getUserInfo = async (req: Request, res: Response, next: NextFunctio
     if (err) throw err;
   });
   const sqlParams = [userId];
-  const sql = 'SELECT user_info_job_description as jobDescription, user_info_short_life_story as lifeStory, user_info_why_doing_this as userWhy FROM users_info, users where users_info.user_id = users.user_id and users_info.user_id = ?;';
+  const sql = 'SELECT user_info_job_description as jobDescription, user_info_short_life_story as lifeStory, user_info_why_doing_this as userWhy, bgUrl FROM users_info, users where users_info.user_id = users.user_id and users_info.user_id = ?;';
   await connection.query(sql, sqlParams, function (err: Error, results: any) {
     if (err) throw err;
     saveRedisData(`user-info-${userId}`, results?.[0]);
