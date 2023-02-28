@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { Redis } from "../cache/cache.redis";
-import { dbConnection } from '../database/db';
+import DbConnection from '../database/db';
 
 export const fetchRedisData = async (key: string) => {
   const redis = new Redis();
@@ -35,7 +35,8 @@ export const getProjects = async (req: Request, res: Response, next: NextFunctio
   if (redisProjects) {
     return res.status(200).json(redisProjects);
   }
-  const connection = await dbConnection(process.env.MYSQL_HOST ?? '', process.env.MYSQL_USERNAME ?? '', process.env.MYSQL_PASSWORD ?? '', process.env.MYSQL_DATABASE ?? '');
+  const database = new DbConnection();
+  const connection = database.connection;
   connection.connect(function(err: Error) {
     if (err) throw err;
   });
@@ -55,7 +56,8 @@ export const getIntroductions = async (req: Request, res: Response, next: NextFu
   if (redisData) {
     return res.status(200).json(redisData);
   }
-  const connection = await dbConnection(process.env.MYSQL_HOST ?? '', process.env.MYSQL_USERNAME ?? '', process.env.MYSQL_PASSWORD ?? '', process.env.MYSQL_DATABASE ?? '');
+  const database = new DbConnection();
+  const connection = database.connection;
   connection.connect(function(err: Error) {
     if (err) throw err;
   });
@@ -68,8 +70,6 @@ export const getIntroductions = async (req: Request, res: Response, next: NextFu
   };
   await connection.query(sqlExpertise, sqlParams, function (err: Error, results: any) {
     if (err) throw err;
-    // saveRedisData(`introductions-${userId}`, results);
-    // return res.status(200).json(results);
     introductionObj.expertise = results;
   });
   const sqlUserData = 'SELECT user_full_name as fullName, user_info_job_description as jobDescription FROM users, users_info where users_info.user_id=users.user_id and users.user_id=?;';
@@ -89,7 +89,8 @@ export const getSkills = async (req: Request, res: Response, next: NextFunction)
   if (redisData) {
     return res.status(200).json(redisData);
   }
-  const connection = await dbConnection(process.env.MYSQL_HOST ?? '', process.env.MYSQL_USERNAME ?? '', process.env.MYSQL_PASSWORD ?? '', process.env.MYSQL_DATABASE ?? '');
+  const database = new DbConnection();
+  const connection = database.connection;
   connection.connect(function(err: Error) {
     if (err) throw err;
   });
@@ -109,7 +110,8 @@ export const getSocialMedia = async (req: Request, res: Response, next: NextFunc
   if (redisData) {
     return res.status(200).json(redisData);
   }
-  const connection = await dbConnection(process.env.MYSQL_HOST ?? '', process.env.MYSQL_USERNAME ?? '', process.env.MYSQL_PASSWORD ?? '', process.env.MYSQL_DATABASE ?? '');
+  const database = new DbConnection();
+  const connection = database.connection;
   connection.connect(function(err: Error) {
     if (err) throw err;
   });
@@ -129,7 +131,8 @@ export const getUserInfo = async (req: Request, res: Response, next: NextFunctio
   if (redisData) {
     return res.status(200).json(redisData);
   }
-  const connection = await dbConnection(process.env.MYSQL_HOST ?? '', process.env.MYSQL_USERNAME ?? '', process.env.MYSQL_PASSWORD ?? '', process.env.MYSQL_DATABASE ?? '');
+  const database = new DbConnection();
+  const connection = database.connection;
   connection.connect(function(err: Error) {
     if (err) throw err;
   });
@@ -149,7 +152,8 @@ export const getUserDetails = async (req: Request, res: Response, next: NextFunc
   if (redisData) {
     return res.status(200).json(redisData);
   }
-  const connection = await dbConnection(process.env.MYSQL_HOST ?? '', process.env.MYSQL_USERNAME ?? '', process.env.MYSQL_PASSWORD ?? '', process.env.MYSQL_DATABASE ?? '');
+  const database = new DbConnection();
+  const connection = database.connection;
   connection.connect(function(err: Error) {
     if (err) throw err;
   });
@@ -169,7 +173,8 @@ export const getSoftSkills = async (req: Request, res: Response, next: NextFunct
   if (redisData) {
     return res.status(200).json(redisData);
   }
-  const connection = await dbConnection(process.env.MYSQL_HOST ?? '', process.env.MYSQL_USERNAME ?? '', process.env.MYSQL_PASSWORD ?? '', process.env.MYSQL_DATABASE ?? '');
+  const database = new DbConnection();
+  const connection = database.connection;
   connection.connect(function(err: Error) {
     if (err) throw err;
   });
