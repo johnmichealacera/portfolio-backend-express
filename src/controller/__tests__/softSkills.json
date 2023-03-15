@@ -1,4 +1,0 @@
-{
-  "softSkills": [{"icon": "database", "name": "Database Administration", "shortDescription": "I am really good with database queries, management, security and maintenance."}, {"icon": "webApp", "name": "Custom Web Application", "shortDescription": "I will create websites that is specific for your organization. Just tell me the details and the requirement for the job."}, {"icon": "backend", "name": "Web Design", "shortDescription": "I have knowledge with CSS and bootstrap as well as responsive design so you can see to it that I will get the work done."}, {"icon": "person", "name": "Awesome personality", "shortDescription": "I am driven, motivated, passionate and is focused on any task given to me."}],
-  "singleSoftSkill": [{"icon": "database", "name": "Database Administration", "shortDescription": "I am really good with database queries, management, security and maintenance."}]
-}

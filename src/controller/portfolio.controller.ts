@@ -1,32 +1,41 @@
 import { NextFunction, Request, Response } from "express";
-import { Redis } from "../cache/cache.redis";
+import Redis from "../cache/cache.redis";
 import DbConnection from '../database/db';
 
-export const fetchRedisData = async (key: string) => {
+export const getRedisClient = async (): Promise<any> => {
   const redis = new Redis();
-  const client = await redis.getClient();
-  client.on('error', (err: Error) => console.log('Redis Client Error', err));
-  await client.connect();
-  const value = await client.get(key);
-  await client.disconnect();
+  return redis.subscribe().then(() => {
+    console.log('subscribing to redis');
+    return redis.getClient();
+  }).catch((error) => {
+    console.error('error in subscription getRedisClient');
+    return null;
+  });
+}
 
+export const fetchRedisData = async (key: string) => {
+  const redisClient = await getRedisClient();
+  console.log('redisClient', redisClient);
+  if (!redisClient) {
+    return null;
+  } 
+  const value = await redisClient.get(key);
   if (value) {
     return JSON.parse(value);
   } else {
     return false;
   }
-
 }
 
 export const saveRedisData = async (key: string, data: Record<string, any>) => {
-  const redis = new Redis();
-  const client = await redis.getClient();
-  client.on('error', (err: Error) => console.log('Redis Client Error', err));
-  await client.connect();
-  await client.set(key, JSON.stringify(data), {
+  console.log('saveRedisData');
+  const redisClient = await getRedisClient();
+  if (!redisClient) {
+    return null;
+  } 
+  await redisClient.set(key, JSON.stringify(data), {
     EX: 86400,
-});
-  await client.disconnect();
+  });
 }
 
 export const getProjects = async (req: Request, res: Response, next: NextFunction) => {

@@ -15,6 +15,6 @@ export default class DbConnection {
       password: process.env.MYSQL_PASSWORD,
       database: process.env.MYSQL_DATABASE,
     });
-  }
+  };
   connection: any;
 }
