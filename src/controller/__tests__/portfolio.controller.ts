@@ -15,7 +15,6 @@ describe('fetching and saving portfolio redis cache', () => {
 
   it('test mocking', async () => {
     // const mRedis = new Redis();
-    console.log('getRedisClient', await getRedisClient());
     
   });
 

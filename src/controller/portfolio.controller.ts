@@ -5,7 +5,6 @@ import DbConnection from '../database/db';
 export const getRedisClient = async (): Promise<any> => {
   const redis = new Redis();
   return redis.subscribe().then(() => {
-    console.log('subscribing to redis');
     return redis.getClient();
   }).catch((error) => {
     console.error('error in subscription getRedisClient');
@@ -15,7 +14,6 @@ export const getRedisClient = async (): Promise<any> => {
 
 export const fetchRedisData = async (key: string) => {
   const redisClient = await getRedisClient();
-  console.log('redisClient', redisClient);
   if (!redisClient) {
     return null;
   } 
@@ -28,7 +26,6 @@ export const fetchRedisData = async (key: string) => {
 }
 
 export const saveRedisData = async (key: string, data: Record<string, any>) => {
-  console.log('saveRedisData');
   const redisClient = await getRedisClient();
   if (!redisClient) {
     return null;
