@@ -1,6 +1,6 @@
 import * as redis from 'redis';
 
-export class Redis {
+export default class Redis {
   client;
  
   constructor() {
