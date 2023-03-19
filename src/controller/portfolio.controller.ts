@@ -42,18 +42,16 @@ export const getProjects = async (req: Request, res: Response, next: NextFunctio
     return res.status(200).json(redisProjects);
   }
   const database = new DbConnection();
-  const connection = database.connection;
-  connection.connect(function(err: Error) {
-    if (err) throw err;
-  });
   const sqlParams = [userId];
   const sql = 'SELECT title, description, url, background_image as imageLink FROM project_info, users_info where project_info.user_id = users_info.user_id and project_info.user_id = ?;';
-  await connection.query(sql, sqlParams, function (err: any, results: any) {
-    if (err) throw err;
-    saveRedisData(`projects-${userId}`, results);
-    return res.status(200).json(results);
-  });
-  connection.end()
+  const rows = await database.query(sql, sqlParams)
+    .then((rows) => rows)
+    .catch((error) => {
+      console.error(error);
+      throw error;
+    });
+  saveRedisData(`projects-${userId}`, rows);
+  return res.status(200).json(rows);
 }
 
 export const getIntroductions = async (req: Request, res: Response, next: NextFunction) => {
@@ -63,10 +61,6 @@ export const getIntroductions = async (req: Request, res: Response, next: NextFu
     return res.status(200).json(redisData);
   }
   const database = new DbConnection();
-  const connection = database.connection;
-  connection.connect(function(err: Error) {
-    if (err) throw err;
-  });
   const sqlParams = [userId];
   const sqlExpertise = 'SELECT title, icon FROM skill_overview_info, users_info where skill_overview_info.user_id = users_info.user_id and users_info.user_id=?;';
   const introductionObj = {
@@ -74,19 +68,23 @@ export const getIntroductions = async (req: Request, res: Response, next: NextFu
     fullName: '',
     jobDescription: '',
   };
-  await connection.query(sqlExpertise, sqlParams, function (err: any, results: any) {
-    if (err) throw err;
-    introductionObj.expertise = results;
+  introductionObj.expertise = await database.query(sqlExpertise, sqlParams)
+    .then((rows) => rows)
+    .catch((error) => {
+      console.error(error);
+      throw error;
   });
   const sqlUserData = 'SELECT users_info.full_name as fullName, personal_info.job_description as jobDescription FROM personal_info, users_info where personal_info.user_id=users_info.user_id and personal_info.user_id=?;';
-  await connection.query(sqlUserData, sqlParams, function (err: any, results: any) {
-    if (err) throw err;
-    introductionObj.fullName = results[0]?.fullName;
-    introductionObj.jobDescription = results[0]?.jobDescription;
-    saveRedisData(`introductions-${userId}`, introductionObj);
-    return res.status(200).json(introductionObj);
+  const personInfo = await database.query(sqlUserData, sqlParams)
+    .then((rows) => rows)
+    .catch((error) => {
+      console.error(error);
+      throw error;
   });
-  connection.end()
+  introductionObj.fullName = personInfo[0]?.fullName;
+  introductionObj.jobDescription = personInfo[0]?.jobDescription;
+  saveRedisData(`introductions-${userId}`, introductionObj);
+  return res.status(200).json(introductionObj);
 }
 
 export const getSkills = async (req: Request, res: Response, next: NextFunction) => {
@@ -96,18 +94,16 @@ export const getSkills = async (req: Request, res: Response, next: NextFunction)
     return res.status(200).json(redisData);
   }
   const database = new DbConnection();
-  const connection = database.connection;
-  connection.connect(function(err: Error) {
-    if (err) throw err;
-  });
   const sqlParams = [userId];
   const sql = 'SELECT skill_type as type, name, mastery FROM hard_skills_info, users_info where hard_skills_info.user_id = users_info.user_id and hard_skills_info.user_id = ?;';
-  await connection.query(sql, sqlParams, function (err: any, results: any) {
-    if (err) throw err;
-    saveRedisData(`skills-${userId}`, results);
-    return res.status(200).json(results);
+  const rows = await database.query(sql, sqlParams)
+    .then((rows) => rows)
+    .catch((error) => {
+      console.error(error);
+      throw error;
   });
-  connection.end()
+  saveRedisData(`skills-${userId}`, rows);
+  return res.status(200).json(rows);
 }
 
 export const getSocialMedia = async (req: Request, res: Response, next: NextFunction) => {
@@ -117,18 +113,16 @@ export const getSocialMedia = async (req: Request, res: Response, next: NextFunc
     return res.status(200).json(redisData);
   }
   const database = new DbConnection();
-  const connection = database.connection;
-  connection.connect(function(err: Error) {
-    if (err) throw err;
-  });
   const sqlParams = [userId];
   const sql = 'SELECT type, url FROM social_media_info, users_info where social_media_info.user_id = users_info.user_id and social_media_info.user_id = ?;';
-  await connection.query(sql, sqlParams, function (err: any, results: any) {
-    if (err) throw err;
-    saveRedisData(`social-media-${userId}`, results);
-    return res.status(200).json(results);
+  const rows = await database.query(sql, sqlParams)
+    .then((rows) => rows)
+    .catch((error) => {
+      console.error(error);
+      throw error;
   });
-  connection.end()
+  saveRedisData(`social-media-${userId}`, rows);
+  return res.status(200).json(rows);
 }
 
 export const getUserInfo = async (req: Request, res: Response, next: NextFunction) => {
@@ -138,18 +132,16 @@ export const getUserInfo = async (req: Request, res: Response, next: NextFunctio
     return res.status(200).json(redisData);
   }
   const database = new DbConnection();
-  const connection = database.connection;
-  connection.connect(function(err: Error) {
-    if (err) throw err;
-  });
   const sqlParams = [userId];
   const sql = 'Select job_description as jobDescription, life_story as lifeStory, why_do_this as userWhy, background_url as bgUrl FROM personal_info, users_info where personal_info.user_id = users_info.user_id and users_info.user_id = ?;';
-  await connection.query(sql, sqlParams, function (err: any, results: any) {
-    if (err) throw err;
-    saveRedisData(`user-info-${userId}`, results?.[0]);
-    return res.status(200).json(results?.[0]);
+  const rows = await database.query(sql, sqlParams)
+    .then((rows) => rows)
+    .catch((error) => {
+      console.error(error);
+      throw error;
   });
-  connection.end()
+  saveRedisData(`user-info-${userId}`, rows?.[0]);
+  return res.status(200).json(rows?.[0]);
 }
 
 export const getUserDetails = async (req: Request, res: Response, next: NextFunction) => {
@@ -159,19 +151,16 @@ export const getUserDetails = async (req: Request, res: Response, next: NextFunc
     return res.status(200).json(redisData);
   }
   const database = new DbConnection();
-  const connection = database.connection;
-  connection.connect(function(err: Error) {
-    if (err) throw err;
-  });
   const sqlParams = [userId];
   const sql = 'SELECT full_name as fullName, email, contact_number as contactNumber FROM users_info where user_id = ?;';
-  connection.query(sql, sqlParams, function (err: any, results: any) {
-    if (err)
-      throw err;
-    saveRedisData(`user-details-${userId}`, results?.[0]);
-    return res.status(200).json(results?.[0]);
+  const rows = await database.query(sql, sqlParams)
+    .then((rows) => rows)
+    .catch((error) => {
+      console.error(error);
+      throw error;
   });
-  connection.end()
+  saveRedisData(`user-details-${userId}`, rows?.[0]);
+  return res.status(200).json(rows?.[0]);
 }
 
 export const getSoftSkills = async (req: Request, res: Response, next: NextFunction) => {
@@ -181,16 +170,14 @@ export const getSoftSkills = async (req: Request, res: Response, next: NextFunct
     return res.status(200).json(redisData);
   }
   const database = new DbConnection();
-  const connection = database.connection;
-  connection.connect(function(err: Error) {
-    if (err) throw err;
-  });
   const sqlParams = [userId];
   const sql = 'SELECT name , description as shortDescription, icon FROM soft_skill, users_info where soft_skill.user_id = users_info.user_id and soft_skill.user_id = ?;';
-  await connection.query(sql, sqlParams, function (err: any, results: any) {
-    if (err) throw err;
-    saveRedisData(`soft-skills-${userId}`, results);
-    return res.status(200).json(results);
+  const rows = await database.query(sql, sqlParams)
+    .then((rows) => rows)
+    .catch((error) => {
+      console.error(error);
+      throw error;
   });
-  connection.end()
+  saveRedisData(`soft-skills-${userId}`, rows);
+  return res.status(200).json(rows);
 }

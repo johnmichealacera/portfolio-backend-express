@@ -1,5 +1,5 @@
 import express from 'express';
-import { getIntroductions, getProjects, getSkills, getSocialMedia, getSoftSkills, getUserDetails, getUserInfo } from "../controller/portfolio.controller";
+import { getProjects, getIntroductions, getSkills, getSocialMedia, getUserInfo, getUserDetails, getSoftSkills } from "../controller/portfolio.controller";
 
 const router = express.Router();
 router.get('/projects/:userId', getProjects);
