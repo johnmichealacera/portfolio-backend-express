@@ -36,7 +36,8 @@ export const saveRedisData = async (key: string, data: Record<string, any>) => {
 }
 
 export const getProjects = async (req: Request, res: Response, next: NextFunction) => {
-  const { userId } = req?.params;
+  const { userEmail } = req?.params;
+  const { userId } = await getUserId(userEmail) as any;
   let redisProjects = await fetchRedisData(`projects-${userId}`);
   if (redisProjects) {
     return res.status(200).json(redisProjects);
@@ -55,7 +56,8 @@ export const getProjects = async (req: Request, res: Response, next: NextFunctio
 }
 
 export const getIntroductions = async (req: Request, res: Response, next: NextFunction) => {
-  const { userId } = req?.params;
+  const { userEmail } = req?.params;
+  const { userId } = await getUserId(userEmail) as any;
   let redisData = await fetchRedisData(`introductions-${userId}`);
   if (redisData) {
     return res.status(200).json(redisData);
@@ -88,7 +90,8 @@ export const getIntroductions = async (req: Request, res: Response, next: NextFu
 }
 
 export const getSkills = async (req: Request, res: Response, next: NextFunction) => {
-  const { userId } = req?.params;
+  const { userEmail } = req?.params;
+  const { userId } = await getUserId(userEmail) as any;
   let redisData = await fetchRedisData(`skills-${userId}`);
   if (redisData) {
     return res.status(200).json(redisData);
@@ -107,7 +110,8 @@ export const getSkills = async (req: Request, res: Response, next: NextFunction)
 }
 
 export const getSocialMedia = async (req: Request, res: Response, next: NextFunction) => {
-  const { userId } = req?.params;
+  const { userEmail } = req?.params;
+  const { userId } = await getUserId(userEmail) as any;
   let redisData = await fetchRedisData(`social-media-${userId}`);
   if (redisData) {
     return res.status(200).json(redisData);
@@ -126,7 +130,8 @@ export const getSocialMedia = async (req: Request, res: Response, next: NextFunc
 }
 
 export const getUserInfo = async (req: Request, res: Response, next: NextFunction) => {
-  const { userId } = req?.params;
+  const { userEmail } = req?.params;
+  const { userId } = await getUserId(userEmail) as any;
   let redisData = await fetchRedisData(`user-info-${userId}`);
   if (redisData) {
     return res.status(200).json(redisData);
@@ -145,26 +150,40 @@ export const getUserInfo = async (req: Request, res: Response, next: NextFunctio
 }
 
 export const getUserDetails = async (req: Request, res: Response, next: NextFunction) => {
-  const { userId } = req?.params;
-  let redisData = await fetchRedisData(`user-details-${userId}`);
+  const { userEmail } = req?.params;
+  let redisData = await fetchRedisData(`user-details-${userEmail}`);
   if (redisData) {
     return res.status(200).json(redisData);
   }
   const database = new DbConnection();
-  const sqlParams = [userId];
-  const sql = 'SELECT full_name as fullName, email, contact_number as contactNumber FROM users_info where user_id = ?;';
+  const sqlParams = [userEmail];
+  const sql = 'SELECT user_id as userId, full_name as fullName, email, contact_number as contactNumber FROM users_info where email = ?;';
   const rows = await database.query(sql, sqlParams)
     .then((rows) => rows)
     .catch((error) => {
       console.error(error);
       throw error;
   });
-  saveRedisData(`user-details-${userId}`, rows?.[0]);
+  saveRedisData(`user-details-${userEmail}`, rows?.[0]);
   return res.status(200).json(rows?.[0]);
 }
 
+export const getUserId = async (userEmail: string) => {
+  const database = new DbConnection();
+  const sqlParams = [userEmail];
+  const sql = 'SELECT user_id as userId, full_name as fullName, email, contact_number as contactNumber FROM users_info where email = ?;';
+  const rows = await database.query(sql, sqlParams)
+    .then((rows) => rows)
+    .catch((error) => {
+      console.error(error);
+      throw error;
+  });
+  return rows?.[0];
+}
+
 export const getSoftSkills = async (req: Request, res: Response, next: NextFunction) => {
-  const { userId } = req?.params;
+  const { userEmail } = req?.params;
+  const { userId } = await getUserId(userEmail) as any;
   let redisData = await fetchRedisData(`soft-skills-${userId}`);
   if (redisData) {
     return res.status(200).json(redisData);
