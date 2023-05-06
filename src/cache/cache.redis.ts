@@ -6,6 +6,7 @@ export default class Redis {
   constructor() {
     this.client = redis.createClient({
       url: process.env.REDIS_STRING_URL,
+      database: 7,
     });
   }
  
