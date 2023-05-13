@@ -8,15 +8,19 @@ dotenv.config();
 app.use(cors({
     origin: process.env.PORTFOLIO_FRONTEND_URL,
 }));
-const start = async () => {
+
+const startServer = () => {
   try {
-    app.listen(5000, () => console.log("Server started on port 5000")); 
-    
+    const PORT = process.env.PORT || 9000;
+    app.listen(PORT, () => {
+      console.log(`Server started on port ${PORT}`);
+    });   
   } catch (error) {
     process.exit(1);
   }
 };
+
 app.use(express.json());
 app.use(portfolioRoutes);
 
-start();
+startServer();
